@@ -1,7 +1,13 @@
 const express = require('express');
 const User = require('../models/User');
 const router = express.Router();
+const bcrypt = require('bcrypt');
+var jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
+
+//Secret key of jwt
+
+const JWT_SECRET = "IamCoding";
 
 //Create a user using POST method with end point   :   localhost:5000/api/auth/createuser   ; 
 
@@ -22,14 +28,28 @@ router.post('/createuser',[
    if(user){
     return res.status(400).json({error : "A user with this email already exists"});
    }
+  //  Password hashing using salt  .
+   let salt = await bcrypt.genSalt(10);
+   let securePassword = await bcrypt.hash(req.body.password , salt);
   //  Creating a User ..........
      user = await User.create({
       name: req.body.name,
-      password: req.body.password,
+      password: securePassword,
       email : req.body.email
     })
+    // Passing the user id 
+    const data = {
+      user:{
+        id : user.id
+      }
+    }
+    // sending the json web token  in response .
+    const authToken = jwt.sign(data,JWT_SECRET);
+    
+    res.send({authToken})
 
-    res.send(user);  // make sure to send response  ..
+    // res.send(user);  // make sure to send response  ..
+  
   }catch(error){
   console.log(error.massage)
   res.status(500).send("Some Error Occured")
