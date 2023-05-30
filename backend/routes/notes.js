@@ -53,13 +53,14 @@ router.post('/addnote',fetchUser,[
 })
 
 
-//Route 2 :  update note using patch method      :   localhost:5000/api/notes/updatenote/:id   ;
+//Route 3 :  update note using patch method      :   localhost:5000/api/notes/updatenote/:id   ;
 
 router.patch('/updatenote/:id',fetchUser,async(req,res)=>{
    const {title,description,tag} = req.body;
 
 //    create  a new note object 
-
+try {
+    
 const newNote = {}
 
 if(title){newNote.title = title};
@@ -79,8 +80,39 @@ if( note.user.toString() !== req.user.id ){
  note = await Notes.findByIdAndUpdate(req.params.id , {$set : newNote} , {new : true});
 
  res.json({note});
+} catch (error) {
+    console.log(error.massage)
+    res.status(500).send("Internal server error")
+}
 
 })
 
+//Route 4 :  Delete note using DELETE method      :   localhost:5000/api/notes/deletenote/:id   ;
+
+router.delete('/deletenote/:id',fetchUser,async(req,res)=>{
+   
+
+ 
+ try {
+    //  Find thr note to be delete and delete it
+ 
+ let note = await Notes.findById(req.params.id)
+ if(!note){
+     return res.status(400).send("Not Found")
+ }
+//  Allow deletation only if user owns this Note
+ if( note.user.toString() !== req.user.id ){
+     return res.status(401).send("Not Allowed")
+ }
+ 
+  note = await Notes.findByIdAndDelete(req.params.id );
+ 
+  res.json({"Succes ": " Note has been deleted" ,note:note});
+ } catch (error) {
+    console.log(error.massage)
+    res.status(500).send("Internal server error")
+ }
+ 
+ })
 
 module.exports = router;
