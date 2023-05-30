@@ -17,7 +17,7 @@ router.get('/allnotes',fetchUser,async(req,res)=>{
   }
 })
 
-//Route 1 :  Add a new note using post method      :   localhost:5000/api/notes/addnote   ; 
+//Route 2 :  Add a new note using post method      :   localhost:5000/api/notes/addnote   ; 
 
 router.post('/addnote',fetchUser,[
     body('title', 'Enter A valid Title').isLength({ min: 3 }),
@@ -51,5 +51,36 @@ router.post('/addnote',fetchUser,[
 
 
 })
+
+
+//Route 2 :  update note using patch method      :   localhost:5000/api/notes/updatenote/:id   ;
+
+router.patch('/updatenote/:id',fetchUser,async(req,res)=>{
+   const {title,description,tag} = req.body;
+
+//    create  a new note object 
+
+const newNote = {}
+
+if(title){newNote.title = title};
+if(description){newNote.description = description};
+if(tag){newNote.tag = tag};
+
+//  Find thr note to be updated and update it
+
+let note = await Notes.findById(req.params.id)
+if(!note){
+    return res.status(400).send("Not Found")
+}
+if( note.user.toString() !== req.user.id ){
+    return res.status(401).send("Not Allowed")
+}
+
+ note = await Notes.findByIdAndUpdate(req.params.id , {$set : newNote} , {new : true});
+
+ res.json({note});
+
+})
+
 
 module.exports = router;
