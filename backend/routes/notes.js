@@ -21,7 +21,7 @@ router.get('/allnotes',fetchUser,async(req,res)=>{
 
 router.post('/addnote',fetchUser,[
     body('title', 'Enter A valid Title').isLength({ min: 3 }),
-   body('tag', 'password must be atleast 5 character').isLength({ min: 5 }),
+   body('description', 'description must be atleast 5 character').isLength({ min: 5 }),
 ],async(req,res)=>{
      // Handeling Error 
      const errors = validationResult(req);
