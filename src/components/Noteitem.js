@@ -7,7 +7,6 @@ const Noteitem = (props) => {
   return (
     <div className='col-md-3' >
       
-        
     <div className="card my-2" >
   
   <div className="card-body">
