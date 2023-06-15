@@ -75,6 +75,7 @@ router.post('/login',[
   body('email','Enter a valid Email').isEmail(),
   body('password', 'password can not be blank').exists(),
 ],async(req,res)=>{
+  let success =false
   // Handeling Error 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -87,6 +88,7 @@ router.post('/login',[
   try {
     let user  = await User.findOne({email}) ;
     if(!user){
+      success=false
       return res.status(400).json({error : "Please try to login with correct credentials "});
     }
 
@@ -96,7 +98,8 @@ router.post('/login',[
     
     // If password wrong 
     if(!comparePassword){
-     await res.status(400).json({error : "Please try to login with correct credentials"})
+      success=false
+     await res.status(400).json({success, error : "Please try to login with correct credentials"})
     }
 
     const data = {
@@ -106,7 +109,8 @@ router.post('/login',[
     }
   //  Signing with jwt 
     const authtoken = await jwt.sign(data , JWT_SECRET);
-    res.json({authtoken})
+    success=true
+    res.json({success,authtoken})
 
   }catch(error){
     console.log(error.massage)
