@@ -17,17 +17,18 @@ router.post('/createuser',[
      body('email','Enter a valid Email').isEmail(),
     body('password', 'password must be atleast 5 character').isLength({ min: 5 }),
 ],async(req,res)=>{
+  let success = false;
     // Handeling Error 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({success , errors: errors.array() });
     }
   // check the email exist or not 
   try{
 
    let user = await User.findOne({email : req.body.email}); // finding the email from body and check
    if(user){
-    return res.status(400).json({error : "A user with this email already exists"});
+    return res.status(400).json({success,error : "A user with this email already exists"});
    }
   //  Password hashing using salt  .
    let salt = await bcrypt.genSalt(10);
@@ -46,8 +47,8 @@ router.post('/createuser',[
     }
     // sending the json web token  in response .
     const authToken = jwt.sign(data,JWT_SECRET);
-    
-    res.send({authToken})
+    success = true
+    res.send({success,authToken})
 
     // res.send(user);  // make sure to send response  ..
   
