@@ -3,9 +3,6 @@ import { useNavigate } from 'react-router-dom'
 
 const Signup = (props) => {
   
-
-
-    
     
     const [credentials, setCredentials] = useState({name:"",email:"",password:""})
     let navigate = useNavigate()
@@ -26,7 +23,7 @@ const Signup = (props) => {
           if(json.success){
             // save the auth token and redirect 
             localStorage.setItem('token',json.authtoken)
-            navigate("/")
+            navigate("/login")
             props.showAlert("Your Account Created Successfully" , "success")
           }else{
             props.showAlert("Invalid Credentials" , "danger")
@@ -43,6 +40,7 @@ const Signup = (props) => {
   
   return (
     <div className="container">
+    <h2>Signup to Add your Note on Notebook</h2>
       <form onSubmit={handleSubmit}>
   <div className="mb-3">
     <label htmlFor="name" className="form-label">Name</label>
